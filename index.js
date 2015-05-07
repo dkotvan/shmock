@@ -63,6 +63,7 @@ function Assertion(app, method, path) {
   this.headers = {};
   this.isDone = false;
   this.removeWhenMet = true;
+  this.paramsToIgnore = [];
 
   this.parseExpectedRequestBody = function() {
     if(!self.headers["content-type"]) {
@@ -95,6 +96,15 @@ Assertion.prototype.query = function(qs) {
   return this;
 }
 
+Assertion.prototype.ignoreParameters = function(params) {
+  if(typeof params == "array") {
+    this.params = params;
+  } else {
+    this.paramsToIgnore = [params];
+  }
+  return this;
+}
+
 Assertion.prototype.set = function(name, value) {
   this.headers[name.toLowerCase()] = value;
   return this;
@@ -118,6 +128,10 @@ Assertion.prototype.reply = function(status, responseBody) {
 
   this.app[this.method](this.path, function(req, res) {
     if(self.qs) {
+      for(var n in self.paramsToIgnore) {
+        console.log(self.paramsToIgnore[n])
+        delete req.query[self.paramsToIgnore[n]]
+      }
       assert.deepEqual(req.query, self.qs);
     }
     if(self.requestBody) {

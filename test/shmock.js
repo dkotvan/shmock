@@ -75,7 +75,7 @@ describe("shmock", function() {
             if (error) return done(error);
             handler.isDone.should.be.ok;
             done();
-          });     
+          });
         });
       });
     });
@@ -126,6 +126,18 @@ describe("shmock", function() {
         .reply(200);
 
       test.post("/get").query({total: 10, limit: 1, foo: "bar", a: "b", c: "d", x: "y"}).expect(200, done);
+    });
+
+    it("Should ignore the value of query parameters it was configured to do so", function(done) {
+      mock.post("/get")
+        .query({total: 10, limit: 1})
+        .query({foo: "bar"})
+        .query("a=b&c=d")
+        .query("x=y")
+        .ignoreParameters("optionalParameter")
+        .reply(200);
+
+      test.post("/get").query({total: 10, limit: 1, foo: "bar", a: "b", c: "d", x: "y", optionalParameter: "whatever"}).expect(200, done);
     });
 
     it("Should fail if headers are not matched", function(done) {
