@@ -98,7 +98,7 @@ Assertion.prototype.query = function(qs) {
 
 Assertion.prototype.ignoreParameters = function(params) {
   if(typeof params == "array") {
-    this.params = params;
+    this.paramsToIgnore = params;
   } else {
     this.paramsToIgnore = [params];
   }
